@@ -1,0 +1,154 @@
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    03/11/2019  12:06:05  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE .\Objects\Main.obj TO .\Objects\SegundoProjeto PRINT (.\Listings\SegundoProjeto.m51) RAMSIZE
+>>  (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\Main.obj (MAIN)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  .\Objects\SegundoProjeto (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0002H     UNIT         _DATA_GROUP_
+            IDATA   000AH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     07FDH                  *** GAP ***
+            CODE    0800H     007DH     UNIT         ?PR?MAIN?MAIN
+            CODE    087DH     0017H     UNIT         ?PR?_TRANSICAO01?MAIN
+            CODE    0894H     0014H     UNIT         ?PR?CHECKBIT0?MAIN
+            CODE    08A8H     0014H     UNIT         ?PR?CHECKBIT1?MAIN
+            CODE    08BCH     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\SegundoProjeto (MAIN)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN                  0008H    0002H
+  +--> ?PR?_TRANSICAO01?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\SegundoProjeto (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/11/2019  12:06:05  PAGE 2
+
+
+  D:00A0H         PUBLIC        P2
+  B:00A0H.0       PUBLIC        P2_0
+  B:00A0H.1       PUBLIC        P2_1
+  C:0800H         PUBLIC        main
+  C:087DH         PUBLIC        _transicao01
+  C:0894H         PUBLIC        checkbit0
+  C:08A8H         PUBLIC        checkbit1
+  -------         PROC          _TRANSICAO01
+  D:0006H         SYMBOL        a
+  D:0004H         SYMBOL        b
+  C:087DH         LINE#         6
+  C:087DH         LINE#         7
+  C:088BH         LINE#         9
+  C:0890H         LINE#         10
+  C:0890H         LINE#         12
+  C:0893H         LINE#         13
+  -------         ENDPROC       _TRANSICAO01
+  -------         PROC          CHECKBIT0
+  C:0894H         LINE#         15
+  C:0894H         LINE#         17
+  C:0897H         LINE#         18
+  C:0897H         LINE#         20
+  C:08A3H         LINE#         22
+  C:08A4H         LINE#         24
+  C:08A4H         LINE#         26
+  C:08A7H         LINE#         28
+  C:08A7H         LINE#         30
+  -------         ENDPROC       CHECKBIT0
+  -------         PROC          CHECKBIT1
+  C:08A8H         LINE#         32
+  C:08A8H         LINE#         33
+  C:08ABH         LINE#         34
+  C:08ABH         LINE#         36
+  C:08B7H         LINE#         38
+  C:08B8H         LINE#         40
+  C:08B8H         LINE#         42
+  C:08BBH         LINE#         44
+  C:08BBH         LINE#         46
+  -------         ENDPROC       CHECKBIT1
+  -------         PROC          MAIN
+  -------         DO            
+  D:0002H         SYMBOL        val
+  D:0008H         SYMBOL        estado
+  -------         ENDDO         
+  C:0800H         LINE#         48
+  C:0800H         LINE#         49
+  C:0800H         LINE#         50
+  C:0807H         LINE#         51
+  C:0809H         LINE#         52
+  C:0809H         LINE#         53
+  C:0809H         LINE#         55
+  C:0819H         LINE#         56
+  C:0819H         LINE#         57
+  C:082AH         LINE#         58
+  C:082DH         LINE#         59
+  C:0834H         LINE#         60
+  C:083AH         LINE#         61
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  03/11/2019  12:06:05  PAGE 3
+
+
+  C:083AH         LINE#         63
+  C:083CH         LINE#         64
+  C:083CH         LINE#         65
+  C:084DH         LINE#         66
+  C:0850H         LINE#         67
+  C:0856H         LINE#         68
+  C:085BH         LINE#         69
+  C:085BH         LINE#         70
+  C:085DH         LINE#         71
+  C:085DH         LINE#         72
+  C:0862H         LINE#         73
+  C:0873H         LINE#         74
+  C:0876H         LINE#         75
+  C:087BH         LINE#         76
+  C:087BH         LINE#         77
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?CHECKBIT0?MAIN
+
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?CHECKBIT1?MAIN
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 00BCH BYTE ( 9%) *
+******************************************************************************
+
+Program Size: data=11.0 xdata=0 code=203
+LINK/LOCATE RUN COMPLETE.  2 WARNING(S),  0 ERROR(S)
