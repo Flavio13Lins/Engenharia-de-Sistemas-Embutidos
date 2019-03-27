@@ -1,0 +1,176 @@
+C51 COMPILER V9.59.0.0   MAIN                                                              03/13/2019 11:21:31 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\Main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\Main
+                    -.lst) TABS(2) OBJECT(.\Objects\Main.obj)
+
+line level    source
+
+   1          #include <REG51F.H>
+   2          
+   3          #define FrClk 12000000
+   4          
+   5          #define FreqTimer0_emHz 100
+   6          
+   7          #define CORRECAO 60000
+   8          
+   9          #define VALOR_TH0 ((65536 - (FrClk / (12 * FreqTimer0_emHz)) + CORRECAO) >>8)
+  10          
+  11          #define VALOR_TL0 ((65536 - (FrClk / (12 * FreqTimer0_emHz)) + CORRECAO) & 0xFF)
+  12          
+  13          //Calcule o valor de CORRECAO!!!
+  14          
+  15          sbit cl = P2^0;  //Primeiro bit da Porta2
+  16          sbit ch = P2^1;  //Segundo bit da Porta2
+  17          static unsigned char t = 0, globaltimer = 0;
+  18          
+  19          void firstMachine();  //Acompanha mudanças no Segundo bit da Porta2
+  20          void secondMachine();  //Acompanha mudanças no Primeiro bit da Porta2
+  21          void timer0_inicializa();
+  22          void timer0_int();
+  23          
+  24          void main() {
+  25   1        
+  26   1        timer0_inicializa();
+  27   1      
+  28   1        EA=1; //Habilita o tratamento de interrupções
+  29   1      
+  30   1        while(1) {
+  31   2          firstMachine();
+  32   2          secondMachine();
+  33   2        }
+  34   1      }
+  35          
+  36          
+  37          void firstMachine() {
+  38   1        static unsigned char state = 0;  //Considera o estado inicial na primeira inicialização
+  39   1        static unsigned int counter, countermult = 0; 
+  40   1        switch (state) {
+  41   2          case 0:
+  42   2            if (ch == 0) {
+  43   3              state = 1;
+  44   3            }
+  45   2            break;
+  46   2          case 1:
+  47   2            if (ch == 1) {
+  48   3              P1 = (P1 & 0x0F) | (P0 & 0xF0);
+  49   3              counter = 0;
+  50   3              state = 2;
+  51   3            }
+  52   2            break;  
+  53   2          case 2:
+  54   2            if (counter++ == 65000) {
+C51 COMPILER V9.59.0.0   MAIN                                                              03/13/2019 11:21:31 PAGE 2   
+
+  55   3              countermult+=1;
+  56   3              if (countermult==5) {
+  57   4                P1 = P1 & 0x0F;
+  58   4                countermult = 0;
+  59   4                state = 0;
+  60   4              }
+  61   3              counter=0;
+  62   3            }
+  63   2            break;
+  64   2        }
+  65   1      }
+  66          
+  67          void secondMachine() {
+  68   1        static unsigned char state = 0;  //Considera o estado inicial na primeira inicialização
+  69   1          static unsigned char counter;
+  70   1          switch (state) {
+  71   2          case 0:
+  72   2            if (cl == 0) {
+  73   3              state = 1;
+  74   3            }
+  75   2            break;
+  76   2          case 1:
+  77   2            if (cl == 1) {
+  78   3              P1 = (P1 & 0xF0) | (P0 & 0x0F);
+  79   3              timer0_int();
+  80   3              counter = t;
+  81   3              state = 2;
+  82   3            }
+  83   2            break;
+  84   2          case 2:
+  85   2            if (counter > 0xFA){
+  86   3              if(t == 0){
+  87   4                state = 0;
+  88   4                P1 = P1 & 0xF0;
+  89   4              }
+  90   3            }
+  91   2            if (counter == t+5){
+  92   3              state = 0;
+  93   3              P1 = P1 & 0xF0;
+  94   3            }
+  95   2            /*
+  96   2            if (counter++ == 65000) {
+  97   2              countermult+=1;
+  98   2              if (countermult==5) {
+  99   2                
+ 100   2                countermult = 0;
+ 101   2                
+ 102   2              }
+ 103   2              counter=0;
+ 104   2            }
+ 105   2            */
+ 106   2            break;
+ 107   2        }
+ 108   1      }
+ 109          
+ 110          
+ 111          void timer0_inicializa(){
+ 112   1      
+ 113   1        TR0 = 0; // Desliga Timer0
+ 114   1      
+ 115   1        TMOD = (TMOD & 0xF0) | 0x01; // Timer 0 programado como timer de 16 bits
+ 116   1      
+C51 COMPILER V9.59.0.0   MAIN                                                              03/13/2019 11:21:31 PAGE 3   
+
+ 117   1        TH0 = VALOR_TH0; // Programa contagem do Timer0
+ 118   1      
+ 119   1        TL0 = VALOR_TL0;
+ 120   1      
+ 121   1        ET0 = 1; // Habilita interrupcao do timer 0
+ 122   1      
+ 123   1        TR0 = 1; // Habilita contagem do timer 0
+ 124   1      
+ 125   1      }
+ 126          
+ 127          void timer0_int (void) interrupt 1 using 2{
+ 128   1        
+ 129   1        TR0 = 0; // Desliga Timer0
+ 130   1          
+ 131   1        TL0 += VALOR_TL0;
+ 132   1          
+ 133   1        TH0 += VALOR_TH0 + (unsigned char) CY; // Programa contagem do Timer0
+ 134   1      
+ 135   1        TR0 = 1; // Habilita contagem do timer 0
+ 136   1        
+ 137   1        if(t == 0xFF){ //calcular tempo de variaçao
+ 138   2          t=0;
+ 139   2        }
+ 140   1        if(globaltimer == 0xFF){
+ 141   2          t ++;
+ 142   2          globaltimer = 0;
+ 143   2        }
+ 144   1        else{
+ 145   2          globaltimer++;
+ 146   2        }
+ 147   1        
+ 148   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    270    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      9    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
