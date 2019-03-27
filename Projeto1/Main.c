@@ -3,7 +3,7 @@
 sbit P2_0 = P2^0;
 sbit P2_1 = P2^1;
 
-void checkbit0(){
+void checkBit0(){
 
 	if(P2_0 == 1)
 	{
@@ -20,7 +20,7 @@ void checkbit0(){
 	
 }
 		
-void checkbit1(){
+void checkBit1(){
 	if(P2_1 == 1)
 	{
 		//P1H = P0H;
@@ -42,8 +42,8 @@ void main()
 	while(1)
 	{
 		
-		checkbit0();
-		checkbit1();
+		checkBit0();
+		checkBit1();
 		
 	}
 	
