@@ -4,26 +4,46 @@
 
 #define VALOR_TH1 204  //RESULTA EM UMA FREQUENCIA DE 19230 Hz 
 
-/* COMO SMOD EST¡ COM VALOR 1 E TH1 204 O CALCUO FINAL DO BAUDRATE FOI APROXIMADAMENTE 1200bps  */
+/* COMO SMOD EST√Å COM VALOR 1 E TH1 204 O CALCUO FINAL DO BAUDRATE FOI APROXIMADAMENTE 1200bps  */
 
 unsigned char BUFFER_CT[TAMANHO_VETOR], BUFFER_CR[TAMANHO_VETOR]; //Para receber o valor do serial
 unsigned char tin = 0, tout = 0, rin = 0, rout = 0;
 bit TX_BUSY = 0;
 
-void timer1_inicializa();  //Inicializa Timer1 MODO 2
+void timer1_inicializa();  //Inicializa timer1 no MODO 2
 void serial1_inicializa();  //Inicializa Serial MODO 1
 void serial1_int();
-void send_char(char c);
+void send_char(char c); 
+void send_string(char *s);  //Utiliza send_char para enviar uma string
+bit rx_buffer_vazio();  //Verifica se o BUFFER_CR est√° vazio (n√£o existe o que recever)
+unsigned char receive_char();
+void receive_string(char *s); //Utiliza send_char para enviar uma string
 
 void main() {
-	
+	unsigned char a = 'p';
 	serial1_inicializa();
 	
 	timer1_inicializa();
 	
-	EA = 1; //n„o esquecer
+	//BUFFER_CR[0] = 'a';
+	//rout = 1;
+	//BUFFER_CT[0] = 'x';
+	
+	EA = 1; //n√£o esquecer
 
 	while(1){
+		
+		a = receive_char();
+		
+		send_char(a);
+		
+		/*if (a =! '\0'){
+			
+			P1 = a;
+			
+			send_char(a);
+			
+		}*/
 		
 	}
 	
@@ -34,7 +54,7 @@ void timer1_inicializa(){  //MODO 2
 
 	TR1 = 0; // Desliga Timer0
 	
-	PCON = (PCON & 0xFF) | 0x80; 
+	PCON = (PCON & 0xFF) | 0x80;
 
 	TMOD = (TMOD & 0x0F) | 0x20; // Timer 1 programado como timer de 8 bits
 
@@ -46,7 +66,8 @@ void timer1_inicializa(){  //MODO 2
 
 }
 
-void serial1_inicializa(){ //Inicializa InterrupÁ„o Serial Modo 1
+
+void serial1_inicializa(){ //Inicializa Interrup√ß√£o Serial Modo 1
 	
 	ES = 0;
 	
@@ -62,6 +83,16 @@ void serial1_int() interrupt 4 using 2{
 		
 		TI=0;
 		
+		if(tout != tin){
+			
+			SBUF = BUFFER_CT[tout];
+			
+			tout = (tout + 1) % TAMANHO_VETOR;
+			
+		}else{
+			TX_BUSY = 0;
+		}
+		
 		//TRANSMITIR DO BUFFER_CT
 		
 	}
@@ -69,24 +100,31 @@ void serial1_int() interrupt 4 using 2{
 	if(RI == 1){  //Terminou de receber
 		
 		RI = 0;
-		
-		//RECEBER DO BUFFER_CB
+		if (!rx_buffer_vazio()){
+			rout = (rout + 1) % TAMANHO_VETOR;
+			BUFFER_CR[rout] = SBUF;
+			
+			
+			
+		}
 		
 	}
 }
 
 void send_char(char c){
 	
-	if( (tout + 1)%TAMANHO_VETOR != tin){
-		
+	if( (tout + 1) % TAMANHO_VETOR != tin){
+		tout = (tout + 1) % TAMANHO_VETOR;
 		BUFFER_CT[tout] = c;
+		
+		
 		
 	}	
 	if(!TX_BUSY){
 		
+		TX_BUSY = 1;
+		
 		TI = 1;
-	
-		TX_BUSY;
 		
 	}
 	
@@ -101,17 +139,33 @@ void send_string(char *s){
 bit rx_buffer_vazio(){
 	
 	if(rin == rout){
+	
 		return 1;
+
 	}
 	else{
+
 		return 0;
+
 	}
 	
 }
 
-void receive_char(){
+unsigned char receive_char(){
 	
+	char c;
 	
+	if (!rx_buffer_vazio()){
+		rin = (rin + 1) % TAMANHO_VETOR;
+		c = BUFFER_CR[rin];
+		
+		
+			
+		return c;
+		
+	}else {
+		return '\0';
+	}
 	
 }
 
